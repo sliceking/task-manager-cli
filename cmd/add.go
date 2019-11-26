@@ -1,16 +1,21 @@
 package cmd
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/spf13/cobra"
 )
 
 var addCmd = &cobra.Command{
-	Use:   "hugo",
-	Short: "Hugo is a very fast static site generator",
-	Long: `A Fast and Flexible Static Site Generator built with
-				  love by spf13 and friends in Go.
-				  Complete documentation is available at http://hugo.spf13.com`,
+	Use:   "add",
+	Short: "Adds a task to your task list",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Do Stuff Here
+		task := strings.Join(args, " ")
+		fmt.Printf("added \"%s\" to you task list.\n", task)
 	},
+}
+
+func init() {
+	RootCmd.AddCommand(addCmd)
 }

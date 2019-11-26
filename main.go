@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/sliceking/task-manager-cli/cmd"
 
 func main() {
-	fmt.Println("yay")
+	cmd.RootCmd.Execute()
 }

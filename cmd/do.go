@@ -1,16 +1,29 @@
 package cmd
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/spf13/cobra"
 )
 
 var doCmd = &cobra.Command{
-	Use:   "hugo",
-	Short: "Hugo is a very fast static site generator",
-	Long: `A Fast and Flexible Static Site Generator built with
-				  love by spf13 and friends in Go.
-				  Complete documentation is available at http://hugo.spf13.com`,
+	Use:   "do",
+	Short: "Complete a task from your task list",
 	Run: func(cmd *cobra.Command, args []string) {
-		// Do Stuff Here
+		var ids []int
+		for _, arg := range args {
+			id, err := strconv.Atoi(arg)
+			if err != nil {
+				fmt.Println("Failed to parse the argument:", arg)
+			} else {
+				ids = append(ids, id)
+			}
+		}
+		fmt.Println(ids)
 	},
+}
+
+func init() {
+	RootCmd.AddCommand(doCmd)
 }
