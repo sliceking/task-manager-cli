@@ -1,6 +1,7 @@
 package db
 
 import (
+	"encoding/binary"
 	"time"
 
 	"github.com/boltdb/bolt"
@@ -25,4 +26,34 @@ func Init(dbPath string) error {
 		_, err := tx.CreateBucketIfNotExists(taskBucket)
 		return err
 	})
+}
+
+// CreateTask will create the task in the correct bucket and auto increment ids
+// https://github.com/boltdb/bolt#autoincrementing-integer-for-the-bucket
+func CreateTask(task string) (int, error) {
+	var id int
+	err := db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(taskBucket)
+		id64, _ := b.NextSequence()
+		id = int(id64)
+		key := itob(id)
+		return b.Put(key, []byte(task))
+	})
+	if err != nil {
+		return -1, err
+	}
+
+	return id, nil
+}
+
+// turn an int into a byte slice
+func itob(v int) []byte {
+	b := make([]byte, 8)
+	binary.BigEndian.PutUint64(b, uint64(v))
+	return b
+}
+
+// turn a byte slice into an int
+func btoi(b []byte) int {
+	return int(binary.BigEndian.Uint64(b))
 }
