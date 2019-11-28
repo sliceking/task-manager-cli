@@ -46,6 +46,35 @@ func CreateTask(task string) (int, error) {
 	return id, nil
 }
 
+// AllTasks will get all tasks stored in the db
+func AllTasks() ([]Task, error) {
+	var tasks []Task
+	err := db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(taskBucket)
+		c := b.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			tasks = append(tasks, Task{
+				Key:   btoi(k),
+				Value: string(v),
+			})
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return tasks, nil
+}
+
+// DeleteTask will take in a key and delete it (complete it) from the db
+func DeleteTask(key int) error {
+	return db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket(taskBucket)
+		return b.Delete(itob(key))
+	})
+}
+
 // turn an int into a byte slice
 func itob(v int) []byte {
 	b := make([]byte, 8)
